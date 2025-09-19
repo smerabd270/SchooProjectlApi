@@ -2,12 +2,12 @@ using Microsoft.AspNetCore.Mvc;
 using SchooProjectlApi.DTOs;
 using SchooProjectlApi.Services;
 
-namespace SchooProjectlApi.Controllers;
 [ApiController]
-[Route("[controller]")]
+[Route("api/[controller]")]
 public class AuthController : ControllerBase
 {
     private readonly IAuthService _auth;
+
     public AuthController(IAuthService auth) => _auth = auth;
 
     [HttpPost("register")]
@@ -15,7 +15,7 @@ public class AuthController : ControllerBase
     {
         var (success, message) = await _auth.RegisterAsync(dto);
         if (!success) return BadRequest(new { message });
-        return Ok();
+        return Ok(new { message = "User registered successfully" });
     }
 
     [HttpPost("login")]

@@ -1,28 +1,29 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
 using SchooProjectlApi.Data;
 using SchooProjectlApi.DTOs;
 using SchooProjectlApi.Entities;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 
 namespace SchooProjectlApi.Services;
+
 public class AuthService : IAuthService
 {
-    private readonly SchoolContext _db;
+    private readonly SchoolContext _context;
     private readonly IConfiguration _config;
-    private readonly ILogger<AuthService> _logger;
 
-    public AuthService(SchoolContext db, IConfiguration config, ILogger<AuthService> logger)
+    public AuthService(SchoolContext context, IConfiguration config)
     {
-        _db = db; _config = config; _logger = logger;
+        _context = context;
+        _config = config;
     }
 
     public async Task<(bool Success, string? Message)> RegisterAsync(UserRegisterDto dto)
     {
-        if (await _db.Users.AnyAsync(u => u.Username == dto.Username))
-            return (false, "Username taken");
+        if (await _context.Users.AnyAsync(u => u.Username == dto.Username))
+            return (false, "Username already exists");
 
         var user = new User
         {
@@ -31,39 +32,36 @@ public class AuthService : IAuthService
             Role = dto.Role,
             PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password)
         };
-        _db.Users.Add(user);
-        await _db.SaveChangesAsync();
-        _logger.LogInformation("User {Username} registered with role {Role}", user.Username, user.Role);
+
+        _context.Users.Add(user);
+        await _context.SaveChangesAsync();
         return (true, null);
     }
 
     public async Task<string?> LoginAsync(UserLoginDto dto)
     {
-        var user = await _db.Users.SingleOrDefaultAsync(u => u.Username == dto.Username);
+        var user = await _context.Users.SingleOrDefaultAsync(u => u.Username == dto.Username);
         if (user == null || !BCrypt.Net.BCrypt.Verify(dto.Password, user.PasswordHash))
-        {
-            _logger.LogWarning("Failed login for {Username}", dto.Username);
             return null;
-        }
 
-        var jwt = _config.GetSection("Jwt");
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt["Key"]!));
-        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-        var claims = new List<Claim>
+        var claims = new[]
         {
             new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
             new Claim(ClaimTypes.Name, user.Username),
             new Claim(ClaimTypes.Role, user.Role)
         };
+
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
+        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
         var token = new JwtSecurityToken(
-            issuer: jwt["Issuer"],
-            audience: jwt["Audience"],
+            issuer: _config["Jwt:Issuer"],
+            audience: _config["Jwt:Issuer"],
             claims: claims,
-            expires: DateTime.UtcNow.AddMinutes(double.Parse(jwt["ExpireMinutes"] ?? "60")),
+            expires: DateTime.UtcNow.AddHours(2),
             signingCredentials: creds
         );
-        var tokenStr = new JwtSecurityTokenHandler().WriteToken(token);
-        _logger.LogInformation("User {Username} logged in", user.Username);
-        return tokenStr;
+
+        return new JwtSecurityTokenHandler().WriteToken(token);
     }
 }
