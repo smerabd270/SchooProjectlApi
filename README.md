@@ -18,12 +18,4 @@ Supports JWT authentication, role-based authorization, and CRUD operations for U
 - **Logging**: Serilog logs to file
 - **Global Exception Handling**: Middleware catches unhandled exceptions
 
----
 
-## Quick Start
-
-1. **Clone the repository**:
-
-```bash
-git clone https://github.com/YOUR_USERNAME/SchooProjectlApi.git
-cd SchooProjectlApi
