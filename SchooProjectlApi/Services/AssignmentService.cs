@@ -9,7 +9,6 @@ namespace SchooProjectlApi.Services
         private readonly SchoolContext _context;
         public AssignmentService(SchoolContext context) => _context = context;
 
-        // Teacher adds a new assignment
         public async Task<Assignment> CreateAsync(Assignment assignment, int teacherId)
         {
             // Ensure the course belongs to this teacher
@@ -21,19 +20,16 @@ namespace SchooProjectlApi.Services
             return assignment;
         }
 
-        // Get assignment by id
         public async Task<Assignment?> GetByIdAsync(int id) =>
             await _context.Assignments
                 .Include(a => a.Course)
                 .FirstOrDefaultAsync(a => a.Id == id);
 
-        // Student submits assignment
         public async Task<bool> SubmitAsync(int assignmentId, int studentId)
         {
             var assignment = await _context.Assignments.FindAsync(assignmentId);
             if (assignment == null) return false;
 
-            // Check if already submitted
             var existingGrade = await _context.Grades
                 .FirstOrDefaultAsync(g => g.AssignmentId == assignmentId && g.StudentId == studentId);
 
@@ -58,7 +54,6 @@ namespace SchooProjectlApi.Services
             return true;
         }
 
-        // Get assignments for a course
         public async Task<IEnumerable<Assignment>> GetAssignmentsByCourseAsync(int courseId) =>
             await _context.Assignments.Where(a => a.CourseId == courseId).ToListAsync();
     }
