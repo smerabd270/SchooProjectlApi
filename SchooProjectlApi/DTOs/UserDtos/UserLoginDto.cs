@@ -1,4 +1,4 @@
-namespace SchooProjectlApi.DTOs;
+namespace SchooProjectlApi.DTOs.UserDtos;
 public class UserLoginDto
 {
     public string Username { get; set; } = "";

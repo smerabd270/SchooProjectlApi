@@ -1,8 +1,9 @@
-namespace SchooProjectlApi.DTOs;
-public class CourseDto
+﻿namespace SchooProjectlApi.DTOs.CourseDtos;
+
+public class CourseReadDto
 {
     public int Id { get; set; }
     public string Title { get; set; } = "";
     public string Description { get; set; } = "";
-    public int TeacherId { get; set; }
+    public string TeacherName { get; set; } = "";
 }

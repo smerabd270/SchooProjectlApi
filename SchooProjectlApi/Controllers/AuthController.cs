@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using SchooProjectlApi.DTOs;
+using SchooProjectlApi.DTOs.UserDtos;
 using SchooProjectlApi.Services;
 
 [ApiController]

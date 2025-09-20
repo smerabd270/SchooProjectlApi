@@ -1,4 +1,4 @@
-using SchooProjectlApi.DTOs;
+using SchooProjectlApi.DTOs.UserDtos;
 namespace SchooProjectlApi.Services;
 public interface IAuthService
 {

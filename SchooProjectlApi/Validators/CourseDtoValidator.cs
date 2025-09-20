@@ -1,5 +1,5 @@
 using FluentValidation;
-using SchooProjectlApi.DTOs;
+using SchooProjectlApi.DTOs.CourseDtos;
 
 namespace SchooProjectlApi.Validators;
 public class CourseDtoValidator : AbstractValidator<CourseDto>

@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using SchooProjectlApi.Data;
-using SchooProjectlApi.DTOs;
+using SchooProjectlApi.DTOs.UserDtos;
 using SchooProjectlApi.Entities;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;

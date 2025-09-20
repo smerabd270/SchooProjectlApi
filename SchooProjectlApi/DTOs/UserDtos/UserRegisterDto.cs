@@ -1,4 +1,4 @@
-namespace SchooProjectlApi.DTOs;
+namespace SchooProjectlApi.DTOs.UserDtos;
 public class UserRegisterDto
 {
     public string Username { get; set; } = "";
